@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ShowRoom.DbContext.Tables
+﻿namespace ShowRoom.Data.Tables
 {
     public class Car
     {
@@ -13,5 +7,8 @@ namespace ShowRoom.DbContext.Tables
         public string Model { get; set; } = null!;
         public int Year { get; set; }
         public decimal Price { get; set; }
+
+        public int CarSalonId { get; set; }
+        public CarSalon CarSalon { get; set; }
     }
 }

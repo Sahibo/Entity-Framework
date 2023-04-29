@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ShowRoom.Data.DbContext;
 using ShowRoom.Data.Tables;
-using ShowRoom.Services.Interfaces;
 
 namespace ShowRoom.Services.Classes
 {
-    public class CarSalonService : ICarSalonService
+    public class CarSalonService
     {
         private readonly ShowRoomContext _dbContext;
 

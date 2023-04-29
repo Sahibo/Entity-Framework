@@ -1,29 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ShowRoom.Data.DbContext;
 using ShowRoom.Data.Tables;
-using ShowRoom.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ShowRoom.Services.Classes
 {
     public class ConsoleService
     {
-        private readonly ICarService _carService;
+        private readonly CarService _carService;
+        private readonly CarSalonService _carSalonService;
 
+        public ConsoleService()
+        {
+            var dbContext = new ShowRoomContext();
+            _carService = new CarService(dbContext);
+            _carSalonService = new CarSalonService(dbContext);
+        }
         //Menu
         public void ShowMenu()
         {
             while (true)
             {
-                Console.WriteLine("Select an option:");
+                Console.WriteLine("Select an option");
+                Console.WriteLine();
+
+                Console.WriteLine("Cars options:");
                 Console.WriteLine("1. Show all cars");
                 Console.WriteLine("2. Add a car");
                 Console.WriteLine("3. Edit a car");
                 Console.WriteLine("4. Delete a car");
-                Console.WriteLine("5. Exit");
+
+                Console.WriteLine();
+
+                Console.WriteLine("ShowRooms options:");
+                Console.WriteLine("5. Show all showrooms");
+                Console.WriteLine("6. Add a showroom");
+                Console.WriteLine("7. Edit a showroom");
+                Console.WriteLine("8. Delete a showroom");
+
+                Console.WriteLine();
+
+                Console.WriteLine("9. Exit");
+                Console.WriteLine("0. Clean");
 
                 int result = Int32.Parse(Console.ReadLine());
 
@@ -41,9 +58,27 @@ namespace ShowRoom.Services.Classes
                     case 4:
                         ShowDeleteCar();
                         break;
+
+
                     case 5:
+                        ShowAllCarSalons();
+                        break;
+                    case 6:
+                        ShowAddCarSalon();
+                        break;
+                    case 7:
+                        ShowEditCarSalon();
+                        break;
+                    case 8:
+                        ShowDeleteCarSalon();
+                        break;
+
+                    case 9:
                         Console.WriteLine("Mercedes > BMW");
                         return;
+                    case 0:
+                        Console.Clear();
+                        break;
                     default:
                         Console.WriteLine("Invalid option");
                         break;
@@ -57,32 +92,37 @@ namespace ShowRoom.Services.Classes
         //Car
         public void ShowAllCars()
         {
-            var cars = _carService?.GetAllCars();
+            List<Car> cars = _carService.GetAllCars();
+
             if (cars != null)
             {
                 foreach (var car in cars)
                 {
-                    Console.WriteLine($"Make: {car.Make}, Model: {car.Model}, Year: {car.Year}, Price: {car.Price}");
+                    Console.WriteLine($"ID: {car.Id}, Make: {car.Make}, Model: {car.Model}, Year: {car.Year}, Price: {car.Price}");
                 }
             }
         }
 
         public void ShowAddCar()
         {
-            Console.WriteLine("Enter the make of the car:");
+            Console.Write("Enter the showroom ID: ");
+            var showroomid = int.Parse(Console.ReadLine());
+
+            Console.Write("Enter the make of the car: ");
             var make = Console.ReadLine();
 
-            Console.WriteLine("Enter the model of the car:");
+            Console.Write("Enter the model of the car: ");
             var model = Console.ReadLine();
 
-            Console.WriteLine("Enter the year of the car:");
+            Console.Write("Enter the year of the car: ");
             var year = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Enter the price of the car:");
+            Console.Write("Enter the price of the car: ");
             var price = decimal.Parse(Console.ReadLine());
 
             var car = new Car
             {
+                CarSalonId = showroomid,
                 Make = make,
                 Model = model,
                 Year = year,
@@ -109,7 +149,7 @@ namespace ShowRoom.Services.Classes
 
             Console.WriteLine($"Editing car with ID {car.Id}");
             Console.WriteLine($"Current make: {car.Make}");
-            Console.WriteLine($"Enter new make (leave blank to keep current value): ");
+            Console.Write("Enter new make (leave blank to keep current value): ");
 
             var make = Console.ReadLine();
             if (!string.IsNullOrEmpty(make))
@@ -118,16 +158,18 @@ namespace ShowRoom.Services.Classes
             }
 
             Console.WriteLine($"Current model: {car.Model}");
-            Console.WriteLine($"Enter new model (leave blank to keep current value):");
+            Console.Write("Enter new model (leave blank to keep current value): ");
             var model = Console.ReadLine();
+
             if (!string.IsNullOrEmpty(model))
             {
                 car.Model = model;
             }
 
             Console.WriteLine($"Current year: {car.Year}");
-            Console.WriteLine($"Enter new year (leave blank to keep current value):");
+            Console.Write("Enter new year (leave blank to keep current value): ");
             var yearString = Console.ReadLine();
+
             if (!string.IsNullOrEmpty(yearString))
             {
                 var year = int.Parse(yearString);
@@ -135,8 +177,9 @@ namespace ShowRoom.Services.Classes
             }
 
             Console.WriteLine($"Current price: {car.Price}");
-            Console.WriteLine($"Enter new price (leave blank to keep current value):");
+            Console.Write("Enter new price (leave blank to keep current value): ");
             var priceString = Console.ReadLine();
+
             if (!string.IsNullOrEmpty(priceString))
             {
                 var price = decimal.Parse(priceString);
@@ -150,7 +193,7 @@ namespace ShowRoom.Services.Classes
 
         public void ShowDeleteCar()
         {
-            Console.WriteLine("Enter the ID of the car you want to delete:");
+            Console.Write("Enter the ID of the car you want to delete:");
             var id = int.Parse(Console.ReadLine());
 
             var car = _carService.GetCarById(id);
@@ -165,5 +208,84 @@ namespace ShowRoom.Services.Classes
 
             Console.WriteLine($"Car with ID {id} deleted successfully!");
         }
+
+        //CarSalon
+
+        public void ShowAllCarSalons()
+        {
+            List<CarSalon> carsalons = _carSalonService.GetAllCarSalons();
+
+            if (carsalons != null)
+            {
+                foreach (var carsalon in carsalons)
+                {
+                    Console.WriteLine($"ID: {carsalon.Id}, Name: {carsalon.Name}, Count of cars: {carsalon.Cars.Count}");
+                }
+            }
+        }
+
+        public void ShowAddCarSalon()
+        {
+            Console.Write("Enter the name of the showroom: ");
+            var name = Console.ReadLine();
+
+            var carsalon = new CarSalon
+            {
+                Name = name,
+            };
+
+            _carSalonService.AddCarSalon(carsalon);
+
+            Console.WriteLine("Showroom added successfully!");
+        }
+
+        public void ShowEditCarSalon()
+        {
+            Console.WriteLine("Enter the ID of the showroom you want to edit: ");
+            var id = int.Parse(Console.ReadLine());
+
+            var carsalon = _carSalonService.GetCarSalonById(id);
+
+            if (carsalon == null)
+            {
+                Console.WriteLine($"Showroom with ID: {id} not found!");
+                return;
+            }
+
+            Console.WriteLine($"Editing Showroom with ID {carsalon.Id}");
+            Console.WriteLine($"Current name: {carsalon.Name}");
+            Console.Write("Enter new name (leave blank to keep current value): ");
+
+            var name = Console.ReadLine();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                carsalon.Name = name;
+            }
+
+
+            _carSalonService.UpdateCarSalon(carsalon);
+
+            Console.WriteLine($"Showroom with ID {carsalon.Id} updated successfully!");
+        }
+
+        public void ShowDeleteCarSalon()
+        {
+            Console.Write("Enter the ID of the showroom you want to delete:");
+            var id = int.Parse(Console.ReadLine());
+
+            var carsalon = _carSalonService.GetCarSalonById(id);
+
+            if (carsalon == null)
+            {
+                Console.WriteLine($"Showroom with ID {id} not found!");
+                return;
+            }
+
+            _carSalonService.DeleteCarSalon(id);
+
+            Console.WriteLine($"Showroom with ID {id} deleted successfully!");
+        }
+
     }
 }

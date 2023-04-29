@@ -1,10 +1,9 @@
 ﻿using ShowRoom.Data.DbContext;
 using ShowRoom.Data.Tables;
-using ShowRoom.Services.Interfaces;
 
 namespace ShowRoom.Services.Classes
 {
-    public class CarService : ICarService
+    public class CarService
     {
         private readonly ShowRoomContext _dbContext;
         public CarService(ShowRoomContext dbContext)
